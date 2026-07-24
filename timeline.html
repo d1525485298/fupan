@@ -67,6 +67,19 @@
   .card.p1{border-left-color:var(--muted)}
   .card.p3{border-left-color:var(--muted)}
   .card .hd{display:flex;align-items:baseline;gap:8px;margin-bottom:9px}
+  .event{font-size:12.5px;line-height:1.45;font-weight:700;color:var(--ink);
+    background:rgba(42,120,214,.10);border-radius:7px;padding:6px 9px;margin-bottom:8px;
+    display:flex;gap:6px;align-items:flex-start}
+  .event::before{content:"📍";font-size:12px;flex:0 0 auto}
+  .card.fin .event{background:rgba(201,133,0,.14)}
+  .card.mkt .event{background:rgba(208,59,59,.13)}
+  .card.p1 .event,.card.p3 .event{background:rgba(137,135,129,.14)}
+  @media (prefers-color-scheme: dark){
+    .event{background:rgba(57,135,229,.16)}
+    .card.fin .event{background:rgba(250,178,25,.14)}
+    .card.mkt .event{background:rgba(230,103,103,.16)}
+    .card.p1 .event,.card.p3 .event{background:rgba(137,135,129,.16)}
+  }
   .num{display:inline-flex;align-items:center;justify-content:center;
     min-width:22px;height:22px;border-radius:50%;background:var(--series);color:#fff;
     font-size:12.5px;font-weight:700;padding:0 5px}
@@ -90,7 +103,7 @@
 <body>
 <div class="wrap">
   <h1>时间线复盘 · S 曲线</h1>
-  <p class="sub">曲线 = 英伟达第一轮 S 曲线(参照系)。每个节点标注 <b style="color:var(--tell)">当时叙事</b>(市场故事)、<b style="color:var(--crowd)">群众怎么想</b>(大众心理)、<b style="color:var(--real)">实际情况/后来验证</b> 的三重对照。存储慢半拍,正在重演。</p>
+  <p class="sub">曲线 = 英伟达第一轮 S 曲线(参照系)。每个节点标注 <b>📍当时发生的事件</b>,以及 <b style="color:var(--tell)">当时叙事</b>、<b style="color:var(--crowd)">群众怎么想</b>、<b style="color:var(--real)">实际/后来验证</b>。存储慢半拍,正在重演。</p>
   <p class="note">纵轴=市值/股价(示意非等比) · 横轴=时间 · 内容来自视频口述复盘,曲线形状为示意</p>
 
   <svg viewBox="0 0 1400 470" role="img" aria-label="英伟达S曲线时间线,节点编号1-8">
@@ -167,6 +180,7 @@
   <div class="grid">
     <div class="card p1">
       <div class="hd"><span class="num p1">1</span><span class="ttl">孕育 / 杀估值期<small>2022 以前</small></span></div>
+      <div class="event">此阶段视频未点具体事件:英伟达仍被当作"游戏显卡公司",估值被压制</div>
       <div class="row"><span class="tag t">叙事</span><span class="txt">AI 还没爆发,算力需求有限,题材未兑现</span></div>
       <div class="row"><span class="tag c">群众</span><span class="txt">无人问津、不关心;觉得英伟达就是个打游戏的显卡公司</span></div>
       <div class="row"><span class="tag r">实际</span><span class="txt">英伟达被杀估值;产业(AI/数据中心/算力)仍处早期孕育</span></div>
@@ -174,6 +188,7 @@
 
     <div class="card">
       <div class="hd"><span class="num">2</span><span class="ttl">ChatGPT 时刻<small>2022 底</small></span></div>
+      <div class="event">ChatGPT 发布爆火,引爆全市场对算力的想象力</div>
       <div class="row"><span class="tag t">叙事</span><span class="txt">"AI 真的来了",算力需求即将爆发</span></div>
       <div class="row"><span class="tag c">群众</span><span class="txt">半信半疑、观望;少数人上车,多数觉得"涨太多了、追不动"</span></div>
       <div class="row"><span class="tag r">实际</span><span class="txt">杀完估值后进入高确定性成长期,开启第一轮 S 曲线主升</span></div>
@@ -181,6 +196,7 @@
 
     <div class="card fin">
       <div class="hd"><span class="num fin">3</span><span class="ttl">扩张期 ◆财务信号<small>2023–2024</small></span></div>
+      <div class="event">英伟达毛利率一路冲高至 ~75% 峰值;市值从几千亿逐级跃升到 3 万亿</div>
       <div class="row"><span class="tag t">叙事</span><span class="txt">稀缺、供不应求、需求想象力无限、盈利高增长</span></div>
       <div class="row"><span class="tag c">群众</span><span class="txt">全民追捧、越涨越信;"买不到卡就是硬通货",FOMO 情绪高涨</span></div>
       <div class="row"><span class="tag r">实际</span><span class="txt">市值 几千亿→1万→2万→3万亿;毛利率冲到 ~75%(=见顶财务信号)</span></div>
@@ -188,6 +204,7 @@
 
     <div class="card">
       <div class="hd"><span class="num">4</span><span class="ttl">新加坡调研示警<small>2024 年中</small></span></div>
+      <div class="event">作者赴新加坡调研,回来后向多家机构预警:场外期权杠杆过高</div>
       <div class="row"><span class="tag t">叙事</span><span class="txt">高歌猛进,"连大巴司机都知道英伟达"(高度确定)</span></div>
       <div class="row"><span class="tag c">群众</span><span class="txt">极度乐观、贪婪;人人满仓,高度确定释放出全民贪婪</span></div>
       <div class="row"><span class="tag r">实际</span><span class="txt">作者示警:公司/行业没问题,但 3万亿背后场外期权杠杆过高</span></div>
@@ -195,6 +212,7 @@
 
     <div class="card mkt">
       <div class="hd"><span class="num mkt">5</span><span class="ttl">闪崩 ●市场信号<small>2024 / 7</small></span></div>
+      <div class="event">英伟达闪崩,单次跌约 −20%,并带动日本股市大跌</div>
       <div class="row"><span class="tag t">叙事</span><span class="txt">找宏观借口:日元套息交易砍仓等</span></div>
       <div class="row"><span class="tag c">群众</span><span class="txt">恐慌、错愕;四处找"暴跌的理由",归咎于宏观黑天鹅</span></div>
       <div class="row"><span class="tag r">实际</span><span class="txt">闪崩 −20% 带崩日股;真因是高杠杆非宏观/基本面(市场领先于基本面)</span></div>
@@ -202,6 +220,7 @@
 
     <div class="card mkt">
       <div class="hd"><span class="num mkt">6</span><span class="ttl">保证金追缴<small>闪崩后约 1.5 个月</small></span></div>
+      <div class="event">调研预警约一个半月后,英伟达出现保证金追缴(margin call)</div>
       <div class="row"><span class="tag t">叙事</span><span class="txt">—(市场仍在争论原因)</span></div>
       <div class="row"><span class="tag c">群众</span><span class="txt">开始动摇、割肉离场;之前加杠杆的被强平出清</span></div>
       <div class="row"><span class="tag r">实际</span><span class="txt">英伟达出现 margin call,印证"场外杠杆过高"的判断</span></div>
@@ -209,6 +228,7 @@
 
     <div class="card p3">
       <div class="hd"><span class="num p3">7</span><span class="ttl">成熟期<small>2025</small></span></div>
+      <div class="event">英伟达多次公布超预期业绩,股价却涨幅骤减、甚至不涨反跌</div>
       <div class="row"><span class="tag t">叙事</span><span class="txt">"业绩还在涨,超预期就该跳涨"</span></div>
       <div class="row"><span class="tag c">群众</span><span class="txt">困惑、不解;"业绩这么好股价却不涨,是不是有内幕?"</span></div>
       <div class="row"><span class="tag r">实际</span><span class="txt">业绩超预期股价却涨不动、甚至回落;股价与盈利增速明显背离</span></div>
@@ -216,6 +236,7 @@
 
     <div class="card p3">
       <div class="hd"><span class="num p3">8</span><span class="ttl">至今<small>2025–2026</small></span></div>
+      <div class="event">英伟达股价长期在 ~$200 上下盘整,稀缺性溢价逐渐消退、供给端追赶</div>
       <div class="row"><span class="tag t">叙事</span><span class="txt">"英伟达是不是变成老登了?"</span></div>
       <div class="row"><span class="tag c">群众</span><span class="txt">失望、看衰;明星光环褪去,资金转去追下一个热点</span></div>
       <div class="row"><span class="tag r">实际</span><span class="txt">~$200 上下波动;从稀缺高成长重定义为成熟半导体。转折=爆发→成熟,非变坏</span></div>
@@ -223,6 +244,7 @@
 
     <div class="card store">
       <div class="hd"><span class="num mkt">存</span><span class="ttl" style="color:var(--sig-mkt)">存储 · 慢半拍,正在重演<small style="color:var(--muted)">2025 年 5–6 月起 · 三星 / SK海力士</small></span></div>
+      <div class="event">苹果相关事件(作者曾专门做一期视频);6 月起存储板块一连串事件;三星、SK海力士高杠杆下闪崩</div>
       <div class="row"><span class="tag t">叙事</span><span class="txt">投资人揪着"行业基本面",认为下跌另有原因</span></div>
       <div class="row"><span class="tag c">群众</span><span class="txt">正处在④→⑤的贪婪+恐慌切换点;多数人还没意识到这是英伟达剧本的重演</span></div>
       <div class="row"><span class="tag r">实际</span><span class="txt"><b>高确定性下的高杠杆 → 闪崩,与英伟达 2024/7(节点⑤)是同一个剧本,只是慢半拍</b>——所以看似在回顾英伟达,其实在讲存储现在的位置</span></div>
