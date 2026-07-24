@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>时间线复盘 · S 曲线(叙事 vs 实际)</title>
+<style>
+  :root{
+    color-scheme: light dark;
+    --page:#f9f9f7; --surface:#fcfcfb;
+    --ink:#0b0b0b; --ink2:#52514e; --muted:#898781;
+    --grid:#e1e0d9; --axis:#c3c2b7;
+    --series:#2a78d6;
+    --band-1:rgba(137,135,129,.10);
+    --band-2:rgba(42,120,214,.09);
+    --band-3:rgba(137,135,129,.06);
+    --sig-fin:#c98500;
+    --sig-mkt:#d03b3b;
+    --card:rgba(11,11,11,.035);
+    --border:rgba(11,11,11,.10);
+    --tell:#d03b3b;   /* 叙事色 */
+    --crowd:#4a3aa7;  /* 群众心理色 */
+    --real:#006300;   /* 实际色 */
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --page:#0d0d0d; --surface:#1a1a19;
+      --ink:#fff; --ink2:#c3c2b7; --muted:#898781;
+      --grid:#2c2c2a; --axis:#383835;
+      --series:#3987e5;
+      --band-1:rgba(137,135,129,.14);
+      --band-2:rgba(57,135,229,.14);
+      --band-3:rgba(137,135,129,.08);
+      --sig-fin:#fab219;
+      --sig-mkt:#e66767;
+      --card:rgba(255,255,255,.05);
+      --border:rgba(255,255,255,.12);
+      --tell:#e66767;
+      --crowd:#9085e9;
+      --real:#0ca30c;
+    }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--page);color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;
+    padding:28px 20px 44px;}
+  .wrap{max-width:1440px;margin:0 auto;background:var(--surface);
+    border:1px solid var(--border);border-radius:14px;padding:26px 30px 32px;}
+  h1{font-size:23px;margin:0 0 5px;letter-spacing:.5px}
+  .sub{color:var(--ink2);font-size:14px;margin:0 0 4px;line-height:1.6}
+  .note{color:var(--muted);font-size:12px;margin:0 0 10px}
+  svg{width:100%;height:auto;display:block}
+  .keys{display:flex;gap:24px;flex-wrap:wrap;margin:6px 2px 20px;font-size:13px;color:var(--ink2)}
+  .keys span{display:inline-flex;align-items:center;gap:7px}
+  .sw{width:26px;height:0;border-top:3px solid var(--series);border-radius:2px}
+  .sw.dash{border-top-style:dashed}
+  .dot-fin{width:13px;height:13px;background:var(--sig-fin);transform:rotate(45deg);border:2px solid var(--surface)}
+  .dot-mkt{width:13px;height:13px;background:var(--sig-mkt);border-radius:50%;border:2px solid var(--surface)}
+  text{font-family:inherit}
+
+  /* 卡片网格 */
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:6px}
+  .card{background:var(--card);border:1px solid var(--border);border-left:4px solid var(--series);
+    border-radius:10px;padding:12px 14px 13px;}
+  .card.fin{border-left-color:var(--sig-fin)}
+  .card.mkt{border-left-color:var(--sig-mkt)}
+  .card.p1{border-left-color:var(--muted)}
+  .card.p3{border-left-color:var(--muted)}
+  .card .hd{display:flex;align-items:baseline;gap:8px;margin-bottom:9px}
+  .num{display:inline-flex;align-items:center;justify-content:center;
+    min-width:22px;height:22px;border-radius:50%;background:var(--series);color:#fff;
+    font-size:12.5px;font-weight:700;padding:0 5px}
+  .num.fin{background:var(--sig-fin)}
+  .num.mkt{background:var(--sig-mkt)}
+  .num.p1,.num.p3{background:var(--muted)}
+  .ttl{font-size:13.5px;font-weight:700;line-height:1.3}
+  .ttl small{display:block;font-weight:500;color:var(--muted);font-size:11.5px;margin-top:1px}
+  .row{font-size:12.5px;line-height:1.5;margin:3px 0;display:flex;gap:6px}
+  .tag{flex:0 0 auto;font-weight:700;font-size:11px;padding:1px 6px;border-radius:5px;height:fit-content;margin-top:1px}
+  .tag.t{color:var(--tell);border:1px solid var(--tell)}
+  .tag.c{color:var(--crowd);border:1px solid var(--crowd)}
+  .tag.r{color:var(--real);border:1px solid var(--real)}
+  .row .txt{color:var(--ink);flex:1}
+  .card.store{grid-column:1 / -1;border-left-color:var(--sig-mkt);
+    background:linear-gradient(0deg,var(--card),var(--card))}
+  .store .txt b{color:var(--sig-mkt)}
+  @media (max-width:1080px){.grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>时间线复盘 · S 曲线</h1>
+  <p class="sub">曲线 = 英伟达第一轮 S 曲线(参照系)。每个节点标注 <b style="color:var(--tell)">当时叙事</b>(市场故事)、<b style="color:var(--crowd)">群众怎么想</b>(大众心理)、<b style="color:var(--real)">实际情况/后来验证</b> 的三重对照。存储慢半拍,正在重演。</p>
+  <p class="note">纵轴=市值/股价(示意非等比) · 横轴=时间 · 内容来自视频口述复盘,曲线形状为示意</p>
+
+  <svg viewBox="0 0 1400 470" role="img" aria-label="英伟达S曲线时间线,节点编号1-8">
+    <!-- 阶段带 -->
+    <rect x="120" y="40" width="230" height="330" fill="var(--band-1)"/>
+    <rect x="350" y="40" width="470" height="330" fill="var(--band-2)"/>
+    <rect x="820" y="40" width="460" height="330" fill="var(--band-3)"/>
+    <text x="235" y="62" text-anchor="middle" font-size="14" font-weight="600" fill="var(--ink2)">① 孕育 / 杀估值期</text>
+    <text x="585" y="62" text-anchor="middle" font-size="14" font-weight="600" fill="var(--series)">② 爆发 / 扩张期</text>
+    <text x="1050" y="62" text-anchor="middle" font-size="14" font-weight="600" fill="var(--ink2)">③ 成熟期</text>
+
+    <!-- 轴 -->
+    <line x1="120" y1="370" x2="1280" y2="370" stroke="var(--axis)" stroke-width="1.5"/>
+    <line x1="120" y1="40"  x2="120"  y2="370" stroke="var(--axis)" stroke-width="1.5"/>
+    <text x="128" y="56" font-size="12" fill="var(--muted)">市值/股价</text>
+    <text x="1272" y="390" text-anchor="end" font-size="12" fill="var(--muted)">时间 →</text>
+    <line x1="350" y1="40" x2="350" y2="370" stroke="var(--grid)" stroke-width="1" stroke-dasharray="4 4"/>
+    <line x1="820" y1="40" x2="820" y2="370" stroke="var(--grid)" stroke-width="1" stroke-dasharray="4 4"/>
+
+    <!-- 存储 慢半拍 虚线 -->
+    <path d="M 520 360 C 640 362, 720 352, 800 344 C 890 334, 930 300, 1010 250 C 1070 214, 1110 206, 1160 204"
+          fill="none" stroke="var(--series)" stroke-width="2.5" stroke-dasharray="7 6" opacity=".5" stroke-linecap="round"/>
+    <text x="560" y="352" font-size="12.5" fill="var(--series)" opacity=".85" font-weight="600">存储(慢半拍)</text>
+    <circle cx="1160" cy="204" r="7" fill="var(--sig-mkt)" opacity=".55" stroke="var(--surface)" stroke-width="2"/>
+    <text x="1160" y="188" text-anchor="middle" font-size="12" font-weight="700" fill="var(--sig-mkt)">存储现在≈④/⑤</text>
+
+    <!-- 英伟达 主曲线 -->
+    <path d="M 190 350 C 280 352, 320 340, 355 332 C 440 314, 490 208, 560 150 C 640 84, 760 96, 900 92 C 1010 89, 1120 87, 1240 86"
+          fill="none" stroke="var(--series)" stroke-width="3.2" stroke-linecap="round"/>
+
+    <!-- 节点标记 -->
+    <!-- 1 -->
+    <circle cx="190" cy="350" r="14" fill="var(--muted)" stroke="var(--surface)" stroke-width="2.5"/>
+    <text x="190" y="355" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">1</text>
+    <!-- 2 -->
+    <circle cx="355" cy="332" r="14" fill="var(--series)" stroke="var(--surface)" stroke-width="2.5"/>
+    <text x="355" y="337" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">2</text>
+    <!-- 3 财务信号 菱形 -->
+    <rect x="518" y="178" width="26" height="26" rx="4" fill="var(--sig-fin)" transform="rotate(45 531 191)" stroke="var(--surface)" stroke-width="2.5"/>
+    <text x="531" y="196" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">3</text>
+    <!-- 4 -->
+    <circle cx="600" cy="128" r="14" fill="var(--series)" stroke="var(--surface)" stroke-width="2.5"/>
+    <text x="600" y="133" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">4</text>
+    <!-- 5 市场信号 红 -->
+    <circle cx="672" cy="112" r="15" fill="var(--sig-mkt)" stroke="var(--surface)" stroke-width="2.5"/>
+    <text x="672" y="117" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">5</text>
+    <!-- 6 -->
+    <circle cx="752" cy="100" r="14" fill="var(--sig-mkt)" opacity=".72" stroke="var(--surface)" stroke-width="2.5"/>
+    <text x="752" y="105" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">6</text>
+    <!-- 7 -->
+    <circle cx="905" cy="92" r="14" fill="var(--series)" stroke="var(--surface)" stroke-width="2.5"/>
+    <text x="905" y="97" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">7</text>
+    <!-- 8 -->
+    <circle cx="1180" cy="86" r="14" fill="var(--muted)" stroke="var(--surface)" stroke-width="2.5"/>
+    <text x="1180" y="91" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">8</text>
+
+    <!-- 信号小标 -->
+    <text x="531" y="235" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--sig-fin)">◆ 财务见顶信号</text>
+    <text x="672" y="150" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--sig-mkt)">● 市场见顶信号</text>
+  </svg>
+
+  <div class="keys">
+    <span><i class="sw"></i>英伟达 · 参照系(走完第一轮 S 曲线)</span>
+    <span><i class="sw dash"></i>存储 · 同一条曲线,慢半拍</span>
+    <span><i class="dot-fin"></i>财务见顶信号(毛利率高点)</span>
+    <span><i class="dot-mkt"></i>市场见顶信号(高杠杆闪崩)</span>
+  </div>
+  <div class="keys" style="margin-top:-8px">
+    <span><i class="tag t" style="border-radius:5px">叙事</i>当时的市场故事</span>
+    <span><i class="tag c" style="border-radius:5px">群众</i>大众当时的心理/情绪</span>
+    <span><i class="tag r" style="border-radius:5px">实际</i>真实发生 + 后来验证</span>
+  </div>
+
+  <div class="grid">
+    <div class="card p1">
+      <div class="hd"><span class="num p1">1</span><span class="ttl">孕育 / 杀估值期<small>2022 以前</small></span></div>
+      <div class="row"><span class="tag t">叙事</span><span class="txt">AI 还没爆发,算力需求有限,题材未兑现</span></div>
+      <div class="row"><span class="tag c">群众</span><span class="txt">无人问津、不关心;觉得英伟达就是个打游戏的显卡公司</span></div>
+      <div class="row"><span class="tag r">实际</span><span class="txt">英伟达被杀估值;产业(AI/数据中心/算力)仍处早期孕育</span></div>
+    </div>
+
+    <div class="card">
+      <div class="hd"><span class="num">2</span><span class="ttl">ChatGPT 时刻<small>2022 底</small></span></div>
+      <div class="row"><span class="tag t">叙事</span><span class="txt">"AI 真的来了",算力需求即将爆发</span></div>
+      <div class="row"><span class="tag c">群众</span><span class="txt">半信半疑、观望;少数人上车,多数觉得"涨太多了、追不动"</span></div>
+      <div class="row"><span class="tag r">实际</span><span class="txt">杀完估值后进入高确定性成长期,开启第一轮 S 曲线主升</span></div>
+    </div>
+
+    <div class="card fin">
+      <div class="hd"><span class="num fin">3</span><span class="ttl">扩张期 ◆财务信号<small>2023–2024</small></span></div>
+      <div class="row"><span class="tag t">叙事</span><span class="txt">稀缺、供不应求、需求想象力无限、盈利高增长</span></div>
+      <div class="row"><span class="tag c">群众</span><span class="txt">全民追捧、越涨越信;"买不到卡就是硬通货",FOMO 情绪高涨</span></div>
+      <div class="row"><span class="tag r">实际</span><span class="txt">市值 几千亿→1万→2万→3万亿;毛利率冲到 ~75%(=见顶财务信号)</span></div>
+    </div>
+
+    <div class="card">
+      <div class="hd"><span class="num">4</span><span class="ttl">新加坡调研示警<small>2024 年中</small></span></div>
+      <div class="row"><span class="tag t">叙事</span><span class="txt">高歌猛进,"连大巴司机都知道英伟达"(高度确定)</span></div>
+      <div class="row"><span class="tag c">群众</span><span class="txt">极度乐观、贪婪;人人满仓,高度确定释放出全民贪婪</span></div>
+      <div class="row"><span class="tag r">实际</span><span class="txt">作者示警:公司/行业没问题,但 3万亿背后场外期权杠杆过高</span></div>
+    </div>
+
+    <div class="card mkt">
+      <div class="hd"><span class="num mkt">5</span><span class="ttl">闪崩 ●市场信号<small>2024 / 7</small></span></div>
+      <div class="row"><span class="tag t">叙事</span><span class="txt">找宏观借口:日元套息交易砍仓等</span></div>
+      <div class="row"><span class="tag c">群众</span><span class="txt">恐慌、错愕;四处找"暴跌的理由",归咎于宏观黑天鹅</span></div>
+      <div class="row"><span class="tag r">实际</span><span class="txt">闪崩 −20% 带崩日股;真因是高杠杆非宏观/基本面(市场领先于基本面)</span></div>
+    </div>
+
+    <div class="card mkt">
+      <div class="hd"><span class="num mkt">6</span><span class="ttl">保证金追缴<small>闪崩后约 1.5 个月</small></span></div>
+      <div class="row"><span class="tag t">叙事</span><span class="txt">—(市场仍在争论原因)</span></div>
+      <div class="row"><span class="tag c">群众</span><span class="txt">开始动摇、割肉离场;之前加杠杆的被强平出清</span></div>
+      <div class="row"><span class="tag r">实际</span><span class="txt">英伟达出现 margin call,印证"场外杠杆过高"的判断</span></div>
+    </div>
+
+    <div class="card p3">
+      <div class="hd"><span class="num p3">7</span><span class="ttl">成熟期<small>2025</small></span></div>
+      <div class="row"><span class="tag t">叙事</span><span class="txt">"业绩还在涨,超预期就该跳涨"</span></div>
+      <div class="row"><span class="tag c">群众</span><span class="txt">困惑、不解;"业绩这么好股价却不涨,是不是有内幕?"</span></div>
+      <div class="row"><span class="tag r">实际</span><span class="txt">业绩超预期股价却涨不动、甚至回落;股价与盈利增速明显背离</span></div>
+    </div>
+
+    <div class="card p3">
+      <div class="hd"><span class="num p3">8</span><span class="ttl">至今<small>2025–2026</small></span></div>
+      <div class="row"><span class="tag t">叙事</span><span class="txt">"英伟达是不是变成老登了?"</span></div>
+      <div class="row"><span class="tag c">群众</span><span class="txt">失望、看衰;明星光环褪去,资金转去追下一个热点</span></div>
+      <div class="row"><span class="tag r">实际</span><span class="txt">~$200 上下波动;从稀缺高成长重定义为成熟半导体。转折=爆发→成熟,非变坏</span></div>
+    </div>
+
+    <div class="card store">
+      <div class="hd"><span class="num mkt">存</span><span class="ttl" style="color:var(--sig-mkt)">存储 · 慢半拍,正在重演<small style="color:var(--muted)">2025 年 5–6 月起 · 三星 / SK海力士</small></span></div>
+      <div class="row"><span class="tag t">叙事</span><span class="txt">投资人揪着"行业基本面",认为下跌另有原因</span></div>
+      <div class="row"><span class="tag c">群众</span><span class="txt">正处在④→⑤的贪婪+恐慌切换点;多数人还没意识到这是英伟达剧本的重演</span></div>
+      <div class="row"><span class="tag r">实际</span><span class="txt"><b>高确定性下的高杠杆 → 闪崩,与英伟达 2024/7(节点⑤)是同一个剧本,只是慢半拍</b>——所以看似在回顾英伟达,其实在讲存储现在的位置</span></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

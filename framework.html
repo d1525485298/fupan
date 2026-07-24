@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>产业周期 S 曲线复盘 · 英伟达 → 存储</title>
+<style>
+  :root{
+    color-scheme: light dark;
+    --page:#f9f9f7; --surface:#fcfcfb;
+    --ink:#0b0b0b; --ink2:#52514e; --muted:#898781;
+    --grid:#e1e0d9; --axis:#c3c2b7;
+    --series:#2a78d6;              /* 英伟达 主曲线 */
+    --band-1:rgba(137,135,129,.10);/* 孕育/杀估值 */
+    --band-2:rgba(42,120,214,.09); /* 爆发/扩张 */
+    --band-3:rgba(137,135,129,.06);/* 成熟 */
+    --sig-fin:#c98500;             /* 财务信号 毛利率高点 */
+    --sig-mkt:#d03b3b;             /* 市场信号 高杠杆闪崩 */
+    --card:rgba(11,11,11,.045);
+    --border:rgba(11,11,11,.10);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --page:#0d0d0d; --surface:#1a1a19;
+      --ink:#fff; --ink2:#c3c2b7; --muted:#898781;
+      --grid:#2c2c2a; --axis:#383835;
+      --series:#3987e5;
+      --band-1:rgba(137,135,129,.14);
+      --band-2:rgba(57,135,229,.14);
+      --band-3:rgba(137,135,129,.08);
+      --sig-fin:#fab219;
+      --sig-mkt:#e66767;
+      --card:rgba(255,255,255,.06);
+      --border:rgba(255,255,255,.12);
+    }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--page);color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;
+    padding:28px 20px 40px;}
+  .wrap{max-width:1240px;margin:0 auto;background:var(--surface);
+    border:1px solid var(--border);border-radius:14px;padding:26px 30px 30px;}
+  h1{font-size:22px;margin:0 0 4px;letter-spacing:.5px}
+  .sub{color:var(--ink2);font-size:13.5px;margin:0 0 6px;line-height:1.6}
+  .note{color:var(--muted);font-size:12px;margin:0 0 12px}
+  svg{width:100%;height:auto;display:block}
+  .legend{display:flex;gap:22px;flex-wrap:wrap;margin:8px 2px 2px;font-size:13px;color:var(--ink2)}
+  .legend span{display:inline-flex;align-items:center;gap:7px}
+  .sw{width:26px;height:0;border-top:3px solid var(--series);border-radius:2px}
+  .sw.dash{border-top-style:dashed}
+  .dot-fin{width:13px;height:13px;background:var(--sig-fin);transform:rotate(45deg);border:2px solid var(--surface)}
+  .dot-mkt{width:13px;height:13px;background:var(--sig-mkt);border-radius:50%;border:2px solid var(--surface)}
+  text{font-family:inherit}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>产业周期 S 曲线复盘</h1>
+  <p class="sub">同一条 S 曲线,不同标的在重复走。<b>英伟达</b>已走完第一轮(参照系);<b>存储</b>慢半拍,正在重演同一剧本。</p>
+  <p class="note">纵轴 = 市值/股价(叙事高度,示意非等比) · 横轴 = 时间 · 曲线形状为示意,节点与信号来自视频口述复盘</p>
+
+  <svg viewBox="0 0 1240 720" role="img" aria-label="英伟达与存储的产业周期S曲线叙事图">
+    <!-- ==== 阶段带 ==== -->
+    <rect x="120" y="70" width="205" height="470" fill="var(--band-1)"/>
+    <rect x="325" y="70" width="430" height="470" fill="var(--band-2)"/>
+    <rect x="755" y="70" width="365" height="470" fill="var(--band-3)"/>
+    <text x="222" y="92" text-anchor="middle" font-size="14" font-weight="600" fill="var(--ink2)">① 孕育 / 杀估值期</text>
+    <text x="540" y="92" text-anchor="middle" font-size="14" font-weight="600" fill="var(--series)">② 爆发 / 扩张期</text>
+    <text x="937" y="92" text-anchor="middle" font-size="14" font-weight="600" fill="var(--ink2)">③ 成熟期</text>
+
+    <!-- ==== 轴 ==== -->
+    <line x1="120" y1="540" x2="1120" y2="540" stroke="var(--axis)" stroke-width="1.5"/>
+    <line x1="120" y1="70"  x2="120"  y2="540" stroke="var(--axis)" stroke-width="1.5"/>
+    <text x="128" y="86" font-size="12" fill="var(--muted)">市值/股价</text>
+    <text x="1112" y="560" text-anchor="end" font-size="12" fill="var(--muted)">时间 →</text>
+
+    <!-- 阶段分隔虚线 -->
+    <line x1="325" y1="70" x2="325" y2="540" stroke="var(--grid)" stroke-width="1" stroke-dasharray="4 4"/>
+    <line x1="755" y1="70" x2="755" y2="540" stroke="var(--grid)" stroke-width="1" stroke-dasharray="4 4"/>
+
+    <!-- ==== 存储 曲线(慢半拍,同色虚线)==== -->
+    <path d="M 470 528 C 590 530, 660 520, 730 512 C 815 502, 855 452, 930 392 C 985 348, 1015 340, 1055 338"
+          fill="none" stroke="var(--series)" stroke-width="2.5" stroke-dasharray="7 6" opacity=".55" stroke-linecap="round"/>
+
+    <!-- ==== 英伟达 主 S 曲线 ==== -->
+    <path d="M 180 512 C 262 514, 300 500, 330 490 C 410 468, 452 356, 522 262 C 604 152, 706 178, 830 170 C 922 164, 984 161, 1035 159"
+          fill="none" stroke="var(--series)" stroke-width="3" stroke-linecap="round"/>
+
+    <!-- ==== 英伟达 节点 ==== -->
+    <!-- n1 2022以前 -->
+    <circle cx="180" cy="512" r="6" fill="var(--series)" stroke="var(--surface)" stroke-width="2"/>
+    <text x="180" y="588" text-anchor="middle" font-size="12.5" fill="var(--ink)">2022 以前</text>
+    <text x="180" y="606" text-anchor="middle" font-size="11.5" fill="var(--muted)">AI 未爆发 · 被杀估值</text>
+
+    <!-- n2 2022底 ChatGPT -->
+    <circle cx="330" cy="490" r="6" fill="var(--series)" stroke="var(--surface)" stroke-width="2"/>
+    <text x="330" y="588" text-anchor="middle" font-size="12.5" fill="var(--ink)">2022 底</text>
+    <text x="330" y="606" text-anchor="middle" font-size="11.5" fill="var(--muted)">ChatGPT 时刻 · 起飞</text>
+
+    <!-- n3 2023-24 扩张 + 毛利率高点(财务信号) -->
+    <rect x="516" y="256" width="12" height="12" fill="var(--sig-fin)" transform="rotate(45 522 262)" stroke="var(--surface)" stroke-width="2"/>
+    <text x="522" y="626" text-anchor="middle" font-size="12.5" fill="var(--ink)">2023–2024</text>
+    <text x="522" y="644" text-anchor="middle" font-size="11.5" fill="var(--muted)">扩张期 · 稀缺+高成长</text>
+
+    <!-- n4 2024/7 闪崩(市场信号) -->
+    <circle cx="628" cy="196" r="6.5" fill="var(--sig-mkt)" stroke="var(--surface)" stroke-width="2"/>
+    <text x="628" y="606" text-anchor="middle" font-size="12.5" fill="var(--ink)">2024 / 7</text>
+    <text x="628" y="624" text-anchor="middle" font-size="11.5" fill="var(--muted)">闪崩 −20%</text>
+
+    <!-- n5 2025 成熟 -->
+    <circle cx="830" cy="170" r="6" fill="var(--series)" stroke="var(--surface)" stroke-width="2"/>
+    <text x="830" y="588" text-anchor="middle" font-size="12.5" fill="var(--ink)">2025</text>
+    <text x="830" y="606" text-anchor="middle" font-size="11.5" fill="var(--muted)">成熟期 · 股价业绩背离</text>
+
+    <!-- n6 至今 -->
+    <circle cx="1035" cy="159" r="6" fill="var(--series)" stroke="var(--surface)" stroke-width="2"/>
+    <text x="1035" y="588" text-anchor="middle" font-size="12.5" fill="var(--ink)">2025–26 至今</text>
+    <text x="1035" y="606" text-anchor="middle" font-size="11.5" fill="var(--muted)">~$200 盘整 · “老登”</text>
+
+    <!-- ==== 信号标注卡 ==== -->
+    <!-- 财务信号:毛利率高点 -->
+    <line x1="522" y1="262" x2="410" y2="200" stroke="var(--sig-fin)" stroke-width="1.3" stroke-dasharray="3 3"/>
+    <g>
+      <rect x="196" y="150" width="222" height="58" rx="8" fill="var(--card)" stroke="var(--sig-fin)" stroke-width="1.3"/>
+      <text x="208" y="171" font-size="12.5" font-weight="700" fill="var(--sig-fin)">◆ 财务见顶信号</text>
+      <text x="208" y="190" font-size="12" fill="var(--ink)">毛利率高点(峰值 ~75%)</text>
+      <text x="208" y="204" font-size="11" fill="var(--ink2)">稀缺溢价见顶 → 竞争常态化起点</text>
+    </g>
+
+    <!-- 市场信号:高杠杆闪崩 -->
+    <line x1="628" y1="196" x2="720" y2="150" stroke="var(--sig-mkt)" stroke-width="1.3" stroke-dasharray="3 3"/>
+    <g>
+      <rect x="718" y="118" width="278" height="58" rx="8" fill="var(--card)" stroke="var(--sig-mkt)" stroke-width="1.3"/>
+      <text x="730" y="139" font-size="12.5" font-weight="700" fill="var(--sig-mkt)">● 市场见顶信号(领先于基本面)</text>
+      <text x="730" y="158" font-size="12" fill="var(--ink)">高确定性 → 场外杠杆 → 波动率释放</text>
+      <text x="730" y="172" font-size="11" fill="var(--ink2)">公司/行业没问题,是市场有问题</text>
+    </g>
+
+    <!-- 存储 当前位置标注 -->
+    <circle cx="1055" cy="338" r="6.5" fill="var(--sig-mkt)" stroke="var(--surface)" stroke-width="2"/>
+    <line x1="1055" y1="338" x2="980" y2="410" stroke="var(--sig-mkt)" stroke-width="1.3" stroke-dasharray="3 3"/>
+    <g>
+      <rect x="742" y="410" width="270" height="58" rx="8" fill="var(--card)" stroke="var(--sig-mkt)" stroke-width="1.3"/>
+      <text x="754" y="431" font-size="12.5" font-weight="700" fill="var(--sig-mkt)">存储 · 现在在这里(2025 5–6 月起)</text>
+      <text x="754" y="450" font-size="12" fill="var(--ink)">三星 / SK海力士:高杠杆 → 闪崩</text>
+      <text x="754" y="464" font-size="11" fill="var(--ink2)">= 英伟达 2024/7 的同一节点,慢半拍</text>
+    </g>
+
+    <!-- 存储 曲线标签 -->
+    <text x="470" y="520" font-size="12" fill="var(--series)" opacity=".8" font-weight="600">存储(慢半拍)</text>
+  </svg>
+
+  <div class="legend">
+    <span><i class="sw"></i>英伟达 · 参照系(已走完第一轮 S 曲线)</span>
+    <span><i class="sw dash"></i>存储 · 同一条曲线,慢半拍</span>
+    <span><i class="dot-fin"></i>财务见顶信号(毛利率高点)</span>
+    <span><i class="dot-mkt"></i>市场见顶信号(高杠杆闪崩)</span>
+  </div>
+</div>
+</body>
+</html>

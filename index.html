@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>产业周期复盘 · 英伟达 → 存储</title>
+<style>
+  :root{
+    color-scheme: light dark;
+    --page:#f9f9f7; --bar:#fcfcfb; --ink:#0b0b0b; --ink2:#52514e;
+    --accent:#2a78d6; --border:rgba(11,11,11,.12); --tabbg:rgba(11,11,11,.05);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --page:#0d0d0d; --bar:#1a1a19; --ink:#fff; --ink2:#c3c2b7;
+      --accent:#3987e5; --border:rgba(255,255,255,.14); --tabbg:rgba(255,255,255,.07); }
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{background:var(--page);color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;
+    display:flex;flex-direction:column;height:100vh}
+  header{background:var(--bar);border-bottom:1px solid var(--border);
+    padding:12px 20px;display:flex;align-items:center;gap:18px;flex-wrap:wrap;flex:0 0 auto}
+  h1{font-size:16px;margin:0;letter-spacing:.4px;white-space:nowrap}
+  h1 small{color:var(--ink2);font-weight:400;font-size:12.5px;margin-left:8px}
+  .tabs{display:flex;gap:8px;margin-left:auto}
+  .tab{appearance:none;border:1px solid var(--border);background:var(--tabbg);
+    color:var(--ink);font-size:13.5px;font-family:inherit;font-weight:600;
+    padding:7px 16px;border-radius:8px;cursor:pointer;transition:.15s}
+  .tab:hover{border-color:var(--accent)}
+  .tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .frame{flex:1 1 auto;border:0;width:100%;background:var(--page)}
+</style>
+</head>
+<body>
+  <header>
+    <h1>产业周期复盘<small>英伟达 → 存储 · S 曲线</small></h1>
+    <div class="tabs">
+      <button class="tab active" data-src="timeline.html">① 时间线复盘(具体)</button>
+      <button class="tab" data-src="framework.html">② 分析框架(抽象)</button>
+    </div>
+  </header>
+  <iframe class="frame" id="view" src="timeline.html" title="复盘视图"></iframe>
+  <script>
+    const view = document.getElementById('view');
+    document.querySelectorAll('.tab').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        document.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('active'); });
+        btn.classList.add('active');
+        view.src = btn.dataset.src;
+      });
+    });
+  </script>
+</body>
+</html>
