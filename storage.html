@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>存储真实事件复盘 · 英伟达剧本重演</title>
+<style>
+  :root{
+    color-scheme: light dark;
+    --page:#f9f9f7; --surface:#fcfcfb;
+    --ink:#0b0b0b; --ink2:#52514e; --muted:#898781;
+    --grid:#e1e0d9; --axis:#c3c2b7;
+    --nv:#898781;                 /* 英伟达 参照系(灰) */
+    --st:#2a78d6;                 /* 存储 主角(蓝) */
+    --band-1:rgba(137,135,129,.10);
+    --band-2:rgba(42,120,214,.09);
+    --band-3:rgba(137,135,129,.06);
+    --sig-fin:#c98500;            /* 财务见顶信号 */
+    --sig-mkt:#d03b3b;            /* 市场见顶信号 */
+    --card:rgba(11,11,11,.035);
+    --border:rgba(11,11,11,.10);
+    --tell:#d03b3b; --crowd:#4a3aa7; --real:#006300;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --page:#0d0d0d; --surface:#1a1a19;
+      --ink:#fff; --ink2:#c3c2b7; --muted:#898781;
+      --grid:#2c2c2a; --axis:#383835;
+      --nv:#898781; --st:#3987e5;
+      --band-1:rgba(137,135,129,.14);
+      --band-2:rgba(57,135,229,.14);
+      --band-3:rgba(137,135,129,.08);
+      --sig-fin:#fab219; --sig-mkt:#e66767;
+      --card:rgba(255,255,255,.05); --border:rgba(255,255,255,.12);
+      --tell:#e66767; --crowd:#9085e9; --real:#0ca30c;
+    }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--page);color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;
+    padding:26px 20px 44px;}
+  .wrap{max-width:1480px;margin:0 auto;background:var(--surface);
+    border:1px solid var(--border);border-radius:14px;padding:24px 30px 32px;}
+  h1{font-size:22px;margin:0 0 5px;letter-spacing:.4px}
+  .sub{color:var(--ink2);font-size:14px;margin:0 0 4px;line-height:1.6}
+  .note{color:var(--muted);font-size:12px;margin:0 0 12px}
+  svg{width:100%;height:auto;display:block}
+  .keys{display:flex;gap:22px;flex-wrap:wrap;margin:6px 2px 18px;font-size:13px;color:var(--ink2)}
+  .keys span{display:inline-flex;align-items:center;gap:7px}
+  .sw{width:26px;height:0;border-top:3px solid var(--st);border-radius:2px}
+  .sw.nv{border-top:3px dashed var(--nv)}
+  .dot-fin{width:13px;height:13px;background:var(--sig-fin);transform:rotate(45deg);border:2px solid var(--surface)}
+  .dot-mkt{width:13px;height:13px;background:var(--sig-mkt);border-radius:50%;border:2px solid var(--surface)}
+  text{font-family:inherit}
+
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:6px}
+  .card{background:var(--card);border:1px solid var(--border);border-left:4px solid var(--st);
+    border-radius:10px;padding:12px 14px 13px;}
+  .card.fin{border-left-color:var(--sig-fin)}
+  .card.mkt{border-left-color:var(--sig-mkt)}
+  .card.p{border-left-color:var(--muted)}
+  .hd{display:flex;align-items:baseline;gap:8px;margin-bottom:9px}
+  .num{display:inline-flex;align-items:center;justify-content:center;
+    min-width:22px;height:22px;border-radius:50%;background:var(--st);color:#fff;
+    font-size:12.5px;font-weight:700;padding:0 5px;flex:0 0 auto}
+  .num.fin{background:var(--sig-fin)} .num.mkt{background:var(--sig-mkt)} .num.p{background:var(--muted)}
+  .ttl{font-size:13.5px;font-weight:700;line-height:1.3}
+  .ttl small{display:block;font-weight:500;color:var(--muted);font-size:11.5px;margin-top:1px}
+  .event{font-size:12.5px;line-height:1.45;font-weight:700;color:var(--ink);
+    background:rgba(42,120,214,.10);border-radius:7px;padding:6px 9px;margin-bottom:8px;
+    display:flex;gap:6px;align-items:flex-start}
+  .event::before{content:"📰";font-size:12px;flex:0 0 auto}
+  .card.fin .event{background:rgba(201,133,0,.14)}
+  .card.mkt .event{background:rgba(208,59,59,.13)}
+  .card.p .event{background:rgba(137,135,129,.14)}
+  @media (prefers-color-scheme: dark){
+    .event{background:rgba(57,135,229,.16)}
+    .card.fin .event{background:rgba(250,178,25,.14)}
+    .card.mkt .event{background:rgba(230,103,103,.16)}
+    .card.p .event{background:rgba(137,135,129,.16)}
+  }
+  .nv-ref{font-size:11.5px;color:var(--ink2);line-height:1.45;
+    border-top:1px dashed var(--border);margin-top:8px;padding-top:7px}
+  .nv-ref b{color:var(--muted)}
+  .row{font-size:12.5px;line-height:1.5;margin:3px 0;display:flex;gap:6px}
+  .tag{flex:0 0 auto;font-weight:700;font-size:11px;padding:1px 6px;border-radius:5px;height:fit-content;margin-top:1px}
+  .tag.t{color:var(--tell);border:1px solid var(--tell)}
+  .tag.c{color:var(--crowd);border:1px solid var(--crowd)}
+  .tag.r{color:var(--real);border:1px solid var(--real)}
+  .txt{color:var(--ink);flex:1}
+  .txt a{color:inherit;text-decoration:underline;text-decoration-color:var(--muted);text-underline-offset:2px}
+  .hook{grid-column:1 / -1;border-left-color:var(--sig-mkt);font-size:13.5px;line-height:1.65}
+  .hook b{color:var(--sig-mkt)}
+  .srcs{grid-column:1 / -1;font-size:11px;color:var(--muted);line-height:1.7;margin-top:2px}
+  .srcs a{color:var(--muted)}
+  @media (max-width:1120px){.grid{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:720px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>存储 · 真实事件复盘</h1>
+  <p class="sub">灰虚线 = <b style="color:var(--muted)">英伟达</b>第一轮 S 曲线(参照系,已走完)。蓝实线 = <b style="color:var(--st)">存储</b>,慢半拍,正在重演同一剧本。<b>每个节点都是真实新闻事件,附日期与出处。</b></p>
+  <p class="note">纵轴=市值/股价(示意非等比) · 横轴=时间 · 曲线形状为示意,节点事件均可查证 · 截至 2026-07</p>
+
+  <svg viewBox="0 0 1440 520" role="img" aria-label="英伟达与存储双S曲线真实事件对照图">
+    <!-- 阶段带 -->
+    <rect x="120" y="40" width="250" height="380" fill="var(--band-1)"/>
+    <rect x="370" y="40" width="470" height="380" fill="var(--band-2)"/>
+    <rect x="840" y="40" width="440" height="380" fill="var(--band-3)"/>
+    <text x="245" y="62" text-anchor="middle" font-size="14" font-weight="600" fill="var(--ink2)">① 孕育 / 杀估值期</text>
+    <text x="605" y="62" text-anchor="middle" font-size="14" font-weight="600" fill="var(--st)">② 爆发 / 扩张期</text>
+    <text x="1060" y="62" text-anchor="middle" font-size="14" font-weight="600" fill="var(--ink2)">③ 成熟期(存储尚未到达)</text>
+
+    <!-- 轴 -->
+    <line x1="120" y1="420" x2="1280" y2="420" stroke="var(--axis)" stroke-width="1.5"/>
+    <line x1="120" y1="40"  x2="120"  y2="420" stroke="var(--axis)" stroke-width="1.5"/>
+    <text x="128" y="56" font-size="12" fill="var(--muted)">市值/股价</text>
+    <text x="1272" y="440" text-anchor="end" font-size="12" fill="var(--muted)">时间 →</text>
+    <line x1="370" y1="40" x2="370" y2="420" stroke="var(--grid)" stroke-width="1" stroke-dasharray="4 4"/>
+    <line x1="840" y1="40" x2="840" y2="420" stroke="var(--grid)" stroke-width="1" stroke-dasharray="4 4"/>
+
+    <!-- 英伟达 参照曲线(灰虚线,走完全程) -->
+    <path d="M 190 400 C 280 402, 320 392, 360 384 C 445 366, 495 262, 565 206 C 645 142, 765 152, 900 148 C 1010 145, 1120 143, 1240 142"
+          fill="none" stroke="var(--nv)" stroke-width="2.4" stroke-dasharray="7 6" opacity=".75" stroke-linecap="round"/>
+    <text x="1150" y="132" text-anchor="middle" font-size="12" font-weight="700" fill="var(--muted)">英伟达 ~$200「老登」</text>
+    <!-- 英伟达 2024/8 闪崩参照点 -->
+    <circle cx="645" cy="178" r="7" fill="var(--sig-mkt)" opacity=".5" stroke="var(--surface)" stroke-width="2"/>
+    <text x="645" y="128" text-anchor="middle" font-size="11" font-weight="700" fill="var(--sig-mkt)" opacity=".9">英伟达 2024/8 闪崩</text>
+    <text x="645" y="112" text-anchor="middle" font-size="10.5" fill="var(--muted)">(怪日元套息)</text>
+
+    <!-- 存储 主曲线(蓝实线,慢半拍,止于⑤当前位置) -->
+    <path d="M 210 408 C 300 410, 360 402, 430 394 C 540 382, 600 320, 700 264 C 780 220, 850 208, 930 226"
+          fill="none" stroke="var(--st)" stroke-width="3.2" stroke-linecap="round"/>
+
+    <!-- 存储 节点 -->
+    <!-- 1 孕育 -->
+    <circle cx="210" cy="408" r="13" fill="var(--muted)" stroke="var(--surface)" stroke-width="2.5"/>
+    <text x="210" y="413" text-anchor="middle" font-size="12.5" font-weight="700" fill="#fff">1</text>
+    <!-- 2 爆发 -->
+    <circle cx="430" cy="394" r="13" fill="var(--st)" stroke="var(--surface)" stroke-width="2.5"/>
+    <text x="430" y="399" text-anchor="middle" font-size="12.5" font-weight="700" fill="#fff">2</text>
+    <!-- 3 财务见顶 高盛 菱形 -->
+    <rect x="551" y="300" width="26" height="26" rx="4" fill="var(--sig-fin)" transform="rotate(45 564 313)" stroke="var(--surface)" stroke-width="2.5"/>
+    <text x="564" y="318" text-anchor="middle" font-size="12.5" font-weight="700" fill="#fff">3</text>
+    <text x="564" y="356" text-anchor="middle" font-size="11" font-weight="700" fill="var(--sig-fin)">◆ 财务见顶 · 高盛下调 2025/7/17</text>
+    <!-- 4 创纪录利润 -->
+    <circle cx="700" cy="264" r="13" fill="var(--st)" stroke="var(--surface)" stroke-width="2.5"/>
+    <text x="700" y="269" text-anchor="middle" font-size="12.5" font-weight="700" fill="#fff">4</text>
+    <text x="700" y="244" text-anchor="middle" font-size="11" fill="var(--muted)">创纪录利润 2026/1</text>
+    <!-- 5 闪崩 市场见顶 当前 -->
+    <circle cx="930" cy="226" r="16" fill="var(--sig-mkt)" stroke="var(--surface)" stroke-width="2.5"/>
+    <text x="930" y="231" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">5</text>
+    <text x="930" y="200" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--sig-mkt)">● 市场见顶 · KOSPI黑色星期一 2026/7</text>
+    <text x="930" y="184" text-anchor="middle" font-size="11" fill="var(--sig-mkt)" font-weight="700">存储现在在这里 ↓</text>
+
+    <!-- 存储未来虚线延伸 -->
+    <path d="M 930 226 C 1000 236, 1060 190, 1150 168 C 1200 156, 1230 152, 1250 150"
+          fill="none" stroke="var(--st)" stroke-width="2.2" stroke-dasharray="5 6" opacity=".4" stroke-linecap="round"/>
+    <text x="1120" y="200" text-anchor="middle" font-size="11" fill="var(--st)" opacity=".7">? 待重演 ⑥⑦⑧</text>
+
+    <text x="240" y="392" font-size="12" fill="var(--st)" font-weight="600">存储(慢半拍)</text>
+  </svg>
+
+  <div class="keys">
+    <span><i class="sw nv"></i>英伟达 · 参照系(已走完第一轮)</span>
+    <span><i class="sw"></i>存储 · 同一条曲线,慢半拍</span>
+    <span><i class="dot-fin"></i>财务见顶信号(定价权反转)</span>
+    <span><i class="dot-mkt"></i>市场见顶信号(拥挤+杠杆闪崩)</span>
+  </div>
+  <div class="keys" style="margin-top:-6px">
+    <span><i class="tag t" style="border-radius:5px">叙事</i>当时的市场故事</span>
+    <span><i class="tag c" style="border-radius:5px">群众</i>大众当时的心理/情绪</span>
+    <span><i class="tag r" style="border-radius:5px">实际</i>真实发生 + 后来验证</span>
+  </div>
+
+  <div class="grid">
+
+    <!-- 1 -->
+    <div class="card p">
+      <div class="hd"><span class="num p">1</span><span class="ttl">孕育 / 杀估值期<small>~2023 及以前</small></span></div>
+      <div class="event">内存长期是科技业最烂的生意:周期性、同质化、常年个位数营业利润率</div>
+      <div class="row"><span class="tag t">叙事</span><span class="txt">存储=周期股/大宗,"不就是内存条降价那点事"</span></div>
+      <div class="row"><span class="tag c">群众</span><span class="txt">没人当成长股看,重资产制造业,无人问津</span></div>
+      <div class="row"><span class="tag r">实际</span><span class="txt">HBM / 企业级需求引擎已在底下点火,尚未进大众叙事</span></div>
+      <div class="nv-ref"><b>▷ 英伟达对应:</b>2022 以前被当"游戏显卡公司",估值被压制</div>
+    </div>
+
+    <!-- 2 -->
+    <div class="card">
+      <div class="hd"><span class="num">2</span><span class="ttl">爆发期 · AI 把内存变金矿<small>2024 年中起</small></span></div>
+      <div class="event">SK海力士 2024 年中卖光 2025 年 HBM 产能;英伟达吃掉其约 90% HBM 产出;DDR5 零售价全年涨 123%</div>
+      <div class="row"><span class="tag t">叙事</span><span class="txt">"内存超级周期""存储不再是周期股",供不应求</span></div>
+      <div class="row"><span class="tag c">群众</span><span class="txt">从半信半疑到越涨越信,FOMO 上头</span></div>
+      <div class="row"><span class="tag r">实际</span><span class="txt">三星/海力士市值逐级跃升,开启主升浪(也是堆确定性、堆杠杆的温床)</span></div>
+      <div class="nv-ref"><b>▷ 英伟达对应:</b>2022 底 ChatGPT 时刻点火,主升浪启动</div>
+    </div>
+
+    <!-- 3 财务信号 -->
+    <div class="card fin">
+      <div class="hd"><span class="num fin">3</span><span class="ttl">◆ 财务见顶 · 高盛下调<small>2025 / 7 / 17</small></span></div>
+      <div class="event">高盛把 SK海力士下调至"中性",警告 HBM 价格 2026 年首次下跌(双位数),定价权由卖方转向买方;当日 -8.95%,单日蒸发 19.3 万亿韩元</div>
+      <div class="row"><span class="tag t">叙事</span><span class="txt">多头反驳:韩投证维持"买入"、目标价 34 万韩元,"Q2 后修复"</span></div>
+      <div class="row"><span class="tag c">群众</span><span class="txt">半信半疑,多数认为只是回调</span></div>
+      <div class="row"><span class="tag r">实际</span><span class="txt">稀缺溢价见顶 → 竞争常态化起点(=英伟达毛利率 75% 见顶同一类信号)</span></div>
+      <div class="nv-ref"><b>▷ 英伟达对应:</b>毛利率冲到 ~75% 峰值 = 财务见顶信号</div>
+    </div>
+
+    <!-- 4 -->
+    <div class="card">
+      <div class="hd"><span class="num">4</span><span class="ttl">确定性拉满 · 创纪录利润<small>2026 / 1 / 28</small></span></div>
+      <div class="event">SK海力士利润翻倍创纪录,营业利润率超 50%;SK集团董事长公开称晶圆短缺将持续到 2030 年</div>
+      <div class="row"><span class="tag t">叙事</span><span class="txt">"内存彻底告别周期,长期短缺已成定局"</span></div>
+      <div class="row"><span class="tag c">群众</span><span class="txt">极度乐观、人人满仓——高度确定,正是全民贪婪的信号</span></div>
+      <div class="row"><span class="tag r">实际</span><span class="txt">高确定性喂饱高杠杆;超 50% 营业利润率的"完美"是危险的前夜</span></div>
+      <div class="nv-ref"><b>▷ 英伟达对应:</b>市值冲 3 万亿,"连大巴司机都知道英伟达"</div>
+    </div>
+
+    <!-- 5 市场信号 -->
+    <div class="card mkt">
+      <div class="hd"><span class="num mkt">5</span><span class="ttl">● 市场见顶 · KOSPI 黑色星期一<small>2026 / 7 · 存储现在在这里</small></span></div>
+      <div class="event">SK海力士纳斯达克 ADR +13% 溢价追捧;同期韩国本土闪崩:SK海力士单日 -15.37%、三星 -10.70%、KOSPI -8.95%(669点)触发熔断;外资+机构各抛约 1.45 万亿韩元</div>
+      <div class="row"><span class="tag t">叙事</span><span class="txt">揪基本面找借口:"价格见顶""Q2 利润低预期 8%""云厂 AI 开支过度""持仓过度集中"</span></div>
+      <div class="row"><span class="tag c">群众</span><span class="txt">恐慌+错愕,正卡在贪婪→恐慌切换点,资金轮动去印度/中国/游戏/能源</span></div>
+      <div class="row"><span class="tag r">实际</span><span class="txt">美股 ADR 狂欢 vs 本土闪崩,"热情没能越过太平洋"——公司/行业没问题,是市场结构(拥挤+杠杆)有问题</span></div>
+      <div class="nv-ref"><b>▷ 英伟达对应:</b>2024/8 黑色星期一闪崩,大家怪"日元套息平仓"(同一节点,慢半拍)</div>
+    </div>
+
+    <!-- 6 未来 -->
+    <div class="card p">
+      <div class="hd"><span class="num p">?</span><span class="ttl">大概率将重演 · 会计质疑 + 背离<small>⑥⑦⑧ 待验证</small></span></div>
+      <div class="event">这只靴子已在英伟达侧响:2025/11 Michael Burry 做空英伟达/Palantir,指控 AI 超大厂用折旧年限人为拉高利润</div>
+      <div class="row"><span class="tag t">叙事</span><span class="txt">未来:"业绩还超预期,为何股价涨不动?"</span></div>
+      <div class="row"><span class="tag c">群众</span><span class="txt">困惑 → 失望;稀缺光环褪去,资金转追下一个热点</span></div>
+      <div class="row"><span class="tag r">实际推演</span><span class="txt">背离期 → 供给追赶 → 从"AI 超级周期"重定义回成熟半导体。转折是爆发→成熟,不是变坏</span></div>
+      <div class="nv-ref"><b>▷ 英伟达对应:</b>2025 业绩超预期股价不涨(背离)→ ~$200 盘整变"老登"</div>
+    </div>
+
+    <!-- 钩子 -->
+    <div class="card mkt hook">
+      <b>一句话叙事 —</b> 2024 年 8 月英伟达闪崩,大家怪日元套息;2026 年 7 月 SK海力士单日 −15%、拖着 KOSPI 熔断,大家怪"内存见顶、AI 开支过度"。<b>两次都在给暴跌找基本面的理由——但两次的真答案是同一个:高确定性喂饱了高杠杆,市场先于基本面见顶。</b>存储不是新故事,是英伟达那条 S 曲线,慢半拍地又走了一遍。
+    </div>
+
+    <!-- 出处 -->
+    <div class="srcs">
+      来源:
+      <a href="https://www.businesskorea.co.kr/news/articleView.html?idxno=247413" target="_blank" rel="noopener">Business Korea · 高盛下调(2025/7/17)</a> ·
+      <a href="https://counterpointresearch.com/en/insights/Q4-2025-Samsung-Reclaims-Top-Memory-Spot-With-%2426-Bn-in-Revenue-Record-Operating-Profit-Margin-for-SK-hynix" target="_blank" rel="noopener">Counterpoint · Q4 2025 存储市场</a> ·
+      <a href="https://kr.ibtimes.com/sk-hynix-plunges-15-korea-despite-13-adr-premium-nasdaq-debut-kospi-suffers-black-monday-crash-101370" target="_blank" rel="noopener">IBTimes KR · KOSPI 黑色星期一(2026/7)</a> ·
+      <a href="https://www.bloomberg.com/news/articles/2026-07-13/sk-hynix-shares-drop-in-seoul-after-much-hyped-us-trading-debut" target="_blank" rel="noopener">Bloomberg · ADR 首秀后大跌</a> ·
+      <a href="https://www.bis.org/publ/bisbull90.pdf" target="_blank" rel="noopener">BIS · 2024/8 套息平仓</a> ·
+      <a href="https://www.cnbc.com/amp/2025/11/11/big-short-investor-michael-burry-accuses-ai-hyperscalers-of-artificially-boosting-earnings" target="_blank" rel="noopener">CNBC · Burry 做空 AI(2025/11)</a>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>
