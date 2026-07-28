@@ -7,170 +7,84 @@
 <style>
   :root{
     color-scheme: light dark;
-    --page:#f9f9f7; --bar:#fcfcfb; --ink:#0b0b0b; --ink2:#52514e; --muted:#898781;
-    --accent:#2a78d6; --border:rgba(11,11,11,.12);
-    --navbg:#f4f3ef; --itembg:rgba(11,11,11,.03); --itemhover:rgba(42,120,214,.10);
+    --page:#f9f9f7; --surface:#fcfcfb; --ink:#0b0b0b; --ink2:#52514e; --muted:#898781;
+    --accent:#2a78d6; --border:rgba(11,11,11,.12); --card:rgba(11,11,11,.03);
+    --sig-fin:#c98500; --sig-mkt:#d03b3b;
   }
   @media (prefers-color-scheme: dark){
-    :root{ --page:#0d0d0d; --bar:#1a1a19; --ink:#fff; --ink2:#c3c2b7; --muted:#898781;
-      --accent:#3987e5; --border:rgba(255,255,255,.14);
-      --navbg:#161615; --itembg:rgba(255,255,255,.04); --itemhover:rgba(57,135,229,.16); }
+    :root{ --page:#0d0d0d; --surface:#1a1a19; --ink:#fff; --ink2:#c3c2b7; --muted:#898781;
+      --accent:#3987e5; --border:rgba(255,255,255,.14); --card:rgba(255,255,255,.04);
+      --sig-fin:#fab219; --sig-mkt:#e66767; }
   }
   *{box-sizing:border-box}
-  html,body{margin:0;height:100%}
-  body{background:var(--page);color:var(--ink);
+  body{margin:0;min-height:100vh;background:var(--page);color:var(--ink);
     font-family:system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;
-    display:flex;height:100vh;overflow:hidden}
+    display:flex;align-items:center;justify-content:center;padding:40px 20px}
+  .wrap{max-width:820px;width:100%}
+  .head{text-align:center;margin-bottom:34px}
+  h1{font-size:26px;margin:0 0 8px;letter-spacing:.5px}
+  .sub{color:var(--ink2);font-size:14.5px;line-height:1.65;margin:0 auto;max-width:600px}
+  .sub b{color:var(--accent)}
 
-  /* ===== 左侧 Word 式导航窗格 ===== */
-  nav{flex:0 0 268px;background:var(--navbg);border-right:1px solid var(--border);
-    display:flex;flex-direction:column;overflow-y:auto;transition:flex-basis .2s,margin-left .2s}
-  nav.collapsed{flex-basis:0;margin-left:-1px;overflow:hidden;border:0}
-  .nav-hd{padding:16px 18px 10px;border-bottom:1px solid var(--border)}
-  .nav-hd .t{font-size:14.5px;font-weight:700;letter-spacing:.3px}
-  .nav-hd .s{font-size:11.5px;color:var(--muted);margin-top:3px}
-  .nav-hd .lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;
-    margin-top:12px}
-  .tree{list-style:none;margin:0;padding:8px 10px 20px}
-  /* 一级:页(标题1) */
-  .h1{margin:4px 0 2px}
-  .h1 > .link{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:8px;
-    cursor:pointer;font-size:13.5px;font-weight:700;color:var(--ink);
-    border:1px solid transparent;transition:.13s;user-select:none}
-  .h1 > .link:hover{background:var(--itemhover)}
-  .h1 > .link.active{background:var(--accent);color:#fff;border-color:var(--accent)}
-  .h1 > .link .ico{flex:0 0 auto;width:16px;text-align:center;font-size:12px;opacity:.85}
-  .h1 > .link .cnt{margin-left:auto;font-size:10.5px;font-weight:600;opacity:.6}
-  /* 二级:节点(标题2) */
-  .h2list{list-style:none;margin:2px 0 8px;padding:0 0 0 26px;
-    border-left:1.5px solid var(--border);margin-left:19px}
-  .h2list.hidden{display:none}
-  .h2{display:block;padding:5px 10px;border-radius:6px;font-size:12px;color:var(--ink2);
-    cursor:pointer;line-height:1.35;transition:.12s;border-left:2px solid transparent;margin:1px 0}
-  .h2:hover{background:var(--itemhover);color:var(--ink)}
-  .h2 b{color:var(--accent);font-weight:700;margin-right:5px}
+  .cards{display:flex;flex-direction:column;gap:14px}
+  a.card{display:flex;align-items:center;gap:18px;text-decoration:none;color:inherit;
+    background:var(--surface);border:1px solid var(--border);border-left:5px solid var(--accent);
+    border-radius:12px;padding:20px 22px;transition:.16s;position:relative}
+  a.card:hover{transform:translateY(-2px);border-color:var(--accent);
+    box-shadow:0 6px 22px rgba(42,120,214,.16)}
+  a.card.fin{border-left-color:var(--sig-fin)}
+  a.card.mkt{border-left-color:var(--sig-mkt)}
+  .ico{flex:0 0 auto;width:52px;height:52px;border-radius:12px;display:flex;
+    align-items:center;justify-content:center;font-size:24px;font-weight:700;
+    background:rgba(42,120,214,.12);color:var(--accent)}
+  a.card.mkt .ico{background:rgba(208,59,59,.13);color:var(--sig-mkt)}
+  a.card.fin .ico{background:rgba(201,133,0,.14);color:var(--sig-fin)}
+  .txt{flex:1;min-width:0}
+  .txt .t{font-size:17px;font-weight:700;margin-bottom:3px}
+  .txt .d{font-size:13px;color:var(--ink2);line-height:1.5}
+  .arrow{flex:0 0 auto;font-size:20px;color:var(--muted);transition:.16s}
+  a.card:hover .arrow{color:var(--accent);transform:translateX(3px)}
 
-  /* ===== 顶栏 + 内容 ===== */
-  .main{flex:1 1 auto;display:flex;flex-direction:column;min-width:0}
-  header{background:var(--bar);border-bottom:1px solid var(--border);
-    padding:10px 18px;display:flex;align-items:center;gap:14px;flex:0 0 auto}
-  .burger{appearance:none;border:1px solid var(--border);background:var(--itembg);color:var(--ink);
-    font-size:16px;line-height:1;width:34px;height:32px;border-radius:8px;cursor:pointer}
-  .burger:hover{border-color:var(--accent)}
-  h1{font-size:15.5px;margin:0;letter-spacing:.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  h1 small{color:var(--ink2);font-weight:400;font-size:12px;margin-left:8px}
-  .frame{flex:1 1 auto;border:0;width:100%;background:var(--page)}
-
-  @media (max-width:820px){
-    nav{position:absolute;z-index:10;height:100%;box-shadow:2px 0 16px rgba(0,0,0,.2)}
-    nav.collapsed{box-shadow:none}
-  }
+  .foot{text-align:center;margin-top:30px;font-size:12px;color:var(--muted);line-height:1.7}
 </style>
 </head>
 <body>
-  <!-- 左侧导航窗格(Word 标题式) -->
-  <nav id="nav">
-    <div class="nav-hd">
-      <div class="t">产业周期复盘</div>
-      <div class="s">英伟达 → 存储 · S 曲线</div>
-      <div class="lbl">导航 · 标题</div>
+  <div class="wrap">
+    <div class="head">
+      <h1>产业周期 S 曲线复盘</h1>
+      <p class="sub">同一条 S 曲线,不同标的在重复走。<b>英伟达</b>已走完第一轮(参照系);<b>存储</b>慢半拍,正在重演同一剧本。</p>
     </div>
-    <ul class="tree" id="tree">
-      <!-- storage -->
-      <li class="h1">
-        <div class="link" data-src="storage.html">
-          <span class="ico">★</span><span>存储 · 真实事件复盘</span><span class="cnt">6节点</span>
-        </div>
-        <ul class="h2list">
-          <li class="h2"><b>1</b>孕育 / 杀估值期</li>
-          <li class="h2"><b>2</b>爆发期 · AI 把内存变金矿</li>
-          <li class="h2"><b>3</b>◆ 财务见顶 · 高盛下调(2025/7)</li>
-          <li class="h2"><b>4</b>确定性拉满 · 创纪录利润(2026/1)</li>
-          <li class="h2"><b>5</b>● 市场见顶 · KOSPI黑色星期一(2026/7)</li>
-          <li class="h2"><b>?</b>将重演 · 会计质疑 + 背离</li>
-        </ul>
-      </li>
-      <!-- timeline -->
-      <li class="h1">
-        <div class="link" data-src="timeline.html">
-          <span class="ico">①</span><span>时间线复盘(具体)</span><span class="cnt">8节点</span>
-        </div>
-        <ul class="h2list hidden">
-          <li class="h2"><b>1</b>孕育 / 杀估值期(2022前)</li>
-          <li class="h2"><b>2</b>ChatGPT 时刻(2022底)</li>
-          <li class="h2"><b>3</b>扩张期 ◆财务信号(23–24)</li>
-          <li class="h2"><b>4</b>新加坡调研示警(24中)</li>
-          <li class="h2"><b>5</b>闪崩 ●市场信号(2024/7)</li>
-          <li class="h2"><b>6</b>保证金追缴</li>
-          <li class="h2"><b>7</b>成熟期 · 背离(2025)</li>
-          <li class="h2"><b>8</b>至今 · "老登"(25–26)</li>
-        </ul>
-      </li>
-      <!-- framework -->
-      <li class="h1">
-        <div class="link" data-src="framework.html">
-          <span class="ico">②</span><span>分析框架(抽象)</span><span class="cnt">S曲线</span>
-        </div>
-        <ul class="h2list hidden">
-          <li class="h2"><b>·</b>① 孕育 / 杀估值期</li>
-          <li class="h2"><b>·</b>② 爆发 / 扩张期</li>
-          <li class="h2"><b>·</b>③ 成熟期</li>
-          <li class="h2"><b>·</b>◆ 财务见顶信号</li>
-          <li class="h2"><b>·</b>● 市场见顶信号</li>
-        </ul>
-      </li>
-    </ul>
-  </nav>
 
-  <!-- 右侧内容 -->
-  <div class="main">
-    <header>
-      <button class="burger" id="burger" title="收起/展开导航">☰</button>
-      <h1 id="crumb">存储 · 真实事件复盘<small>点左侧标题切换</small></h1>
-    </header>
-    <iframe class="frame" id="view" src="storage.html" title="复盘视图"></iframe>
+    <div class="cards">
+      <a class="card mkt" href="storage.html">
+        <div class="ico">★</div>
+        <div class="txt">
+          <div class="t">存储 · 真实事件复盘</div>
+          <div class="d">双 S 曲线对照,每个节点挂真实新闻事件 + 日期 + 出处(高盛下调 2025/7、创纪录利润 2026/1、KOSPI 黑色星期一 2026/7)</div>
+        </div>
+        <div class="arrow">→</div>
+      </a>
+
+      <a class="card" href="timeline.html">
+        <div class="ico">①</div>
+        <div class="txt">
+          <div class="t">时间线复盘(具体)</div>
+          <div class="d">英伟达第一轮 8 个节点,逐点标注「叙事 / 群众心理 / 实际验证」+ 存储对应位置</div>
+        </div>
+        <div class="arrow">→</div>
+      </a>
+
+      <a class="card fin" href="framework.html">
+        <div class="ico">②</div>
+        <div class="txt">
+          <div class="t">分析框架(抽象)</div>
+          <div class="d">S 曲线三段式 + 两类见顶信号(◆财务见顶 / ●市场见顶)的通用框架图</div>
+        </div>
+        <div class="arrow">→</div>
+      </a>
+    </div>
+
+    <p class="foot">内容来自视频口述复盘 · 节点事件均可查证 · 截至 2026-07</p>
   </div>
-
-  <script>
-    var view = document.getElementById('view');
-    var nav  = document.getElementById('nav');
-    var crumb = document.getElementById('crumb');
-    var links = document.querySelectorAll('.h1 > .link');
-
-    function activate(link){
-      links.forEach(function(l){
-        l.classList.remove('active');
-        var sub = l.parentElement.querySelector('.h2list');
-        if(sub) sub.classList.add('hidden');
-      });
-      link.classList.add('active');
-      var sub = link.parentElement.querySelector('.h2list');
-      if(sub) sub.classList.remove('hidden');
-      view.src = link.dataset.src;
-      crumb.firstChild.textContent = link.querySelector('span:nth-child(2)').textContent;
-    }
-
-    links.forEach(function(link){
-      link.addEventListener('click', function(){
-        activate(link);
-        if(window.innerWidth <= 820) nav.classList.add('collapsed');
-      });
-    });
-
-    // 点二级标题也切到对应页(不做页内锚点,仅切页)
-    document.querySelectorAll('.h1').forEach(function(li){
-      var link = li.querySelector('.link');
-      li.querySelectorAll('.h2').forEach(function(h2){
-        h2.addEventListener('click', function(){ activate(link); });
-      });
-    });
-
-    document.getElementById('burger').addEventListener('click', function(){
-      nav.classList.toggle('collapsed');
-    });
-
-    // 默认选中第一项
-    activate(links[0]);
-  </script>
 </body>
 </html>

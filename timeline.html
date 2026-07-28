@@ -98,9 +98,15 @@
     background:linear-gradient(0deg,var(--card),var(--card))}
   .store .txt b{color:var(--sig-mkt)}
   @media (max-width:1080px){.grid{grid-template-columns:repeat(2,1fr)}}
+  .home{position:fixed;top:14px;left:14px;z-index:20;display:inline-flex;align-items:center;gap:6px;
+    text-decoration:none;font-size:13px;font-weight:600;color:var(--ink2);
+    background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:7px 13px;
+    transition:.15s;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+  .home:hover{color:var(--ink);border-color:var(--series)}
 </style>
 </head>
 <body>
+<a class="home" href="index.html">← 返回目录</a>
 <div class="wrap">
   <h1>时间线复盘 · S 曲线</h1>
   <p class="sub">曲线 = 英伟达第一轮 S 曲线(参照系)。每个节点标注 <b>📍当时发生的事件</b>,以及 <b style="color:var(--tell)">当时叙事</b>、<b style="color:var(--crowd)">群众怎么想</b>、<b style="color:var(--real)">实际/后来验证</b>。存储慢半拍,正在重演。</p>

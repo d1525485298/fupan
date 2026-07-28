@@ -51,9 +51,15 @@
   .dot-fin{width:13px;height:13px;background:var(--sig-fin);transform:rotate(45deg);border:2px solid var(--surface)}
   .dot-mkt{width:13px;height:13px;background:var(--sig-mkt);border-radius:50%;border:2px solid var(--surface)}
   text{font-family:inherit}
+  .home{position:fixed;top:14px;left:14px;z-index:20;display:inline-flex;align-items:center;gap:6px;
+    text-decoration:none;font-size:13px;font-weight:600;color:var(--ink2);
+    background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:7px 13px;
+    transition:.15s;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+  .home:hover{color:var(--ink);border-color:var(--series)}
 </style>
 </head>
 <body>
+<a class="home" href="index.html">← 返回目录</a>
 <div class="wrap">
   <h1>产业周期 S 曲线复盘</h1>
   <p class="sub">同一条 S 曲线,不同标的在重复走。<b>英伟达</b>已走完第一轮(参照系);<b>存储</b>慢半拍,正在重演同一剧本。</p>

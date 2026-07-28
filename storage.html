@@ -95,9 +95,15 @@
   .srcs a{color:var(--muted)}
   @media (max-width:1120px){.grid{grid-template-columns:repeat(2,1fr)}}
   @media (max-width:720px){.grid{grid-template-columns:1fr}}
+  .home{position:fixed;top:14px;left:14px;z-index:20;display:inline-flex;align-items:center;gap:6px;
+    text-decoration:none;font-size:13px;font-weight:600;color:var(--ink2);
+    background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:7px 13px;
+    transition:.15s;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+  .home:hover{color:var(--ink);border-color:var(--sig-mkt)}
 </style>
 </head>
 <body>
+<a class="home" href="index.html">← 返回目录</a>
 <div class="wrap">
   <h1>存储 · 真实事件复盘</h1>
   <p class="sub">灰虚线 = <b style="color:var(--muted)">英伟达</b>第一轮 S 曲线(参照系,已走完)。蓝实线 = <b style="color:var(--st)">存储</b>,慢半拍,正在重演同一剧本。<b>每个节点都是真实新闻事件,附日期与出处。</b></p>
